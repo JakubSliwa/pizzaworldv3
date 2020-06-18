@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-interface RoleRepository : MongoRepository<User, UUID> {
-    fun findOneByUserName(userName: String): User?
+interface RoleRepository : MongoRepository<Role, UUID> {
+    fun findByRolename(rolename: String): Role
 }

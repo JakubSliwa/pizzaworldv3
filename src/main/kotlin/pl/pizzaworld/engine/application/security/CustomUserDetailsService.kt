@@ -1,45 +1,21 @@
 package pl.pizzaworld.engine.application.security
 
 
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import java.util.stream.Collectors
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
 
-open class CustomUserDetailsService : User, UserDetails {
-
-    constructor(user: User) : super(user)
-
-    override fun getAuthorities(): Collection<GrantedAuthority> {
-        return roles
-                .stream()
-                .map { role ->
-                    SimpleGrantedAuthority(role.toString())
-                }
-                .collect(Collectors.toList())
+@Service
+open class CustomUserDetailsService(private val userRepository: UserRepository,
+                                    private val  encoder: PasswordEncoder) : UserDetailsService {
+    override fun loadUserByUsername(username: String): UserDetails {
+        return CustomUserDetails(userRepository.findOneByUserName(username)!!)
     }
 
-    override fun getPassword(): String {
-        return super.passWord!!
+    fun registerUser() {
+        val user = User("jakub", "test", "js", "js@a", encoder.encode("1qaz2wsx"))
+        userRepository.save(user)
     }
 
-    override fun getUsername(): String {
-        return super.userName!!
-    }
-
-    override fun isEnabled(): Boolean {
-        return super.enabled
-    }
-
-    override fun isCredentialsNonExpired(): Boolean {
-        return super.credentialsNonExpired
-    }
-
-    override fun isAccountNonExpired(): Boolean {
-        return super.accountNonExpired
-    }
-
-    override fun isAccountNonLocked(): Boolean {
-        return super.accountNonLocked
-    }
 }
