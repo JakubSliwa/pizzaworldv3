@@ -1,23 +1,26 @@
 package pl.pizzaworld.engine.application.api
 
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import pl.pizzaworld.engine.application.security.CustomUserDetailsService
+import pl.pizzaworld.engine.person.Credentials
+import pl.pizzaworld.engine.person.NewPerson
 
 @RestController
-class HelloController(private val customUserDetailsService: CustomUserDetailsService) {
+class HelloController(val customUserDetailsService: CustomUserDetailsService) {
 
-    @GetMapping("/register")
-    fun register(name: String): String {
-        customUserDetailsService.registerUser()
-        return "Hello $name"
+    @PostMapping("/login")
+    fun login(credentials: Credentials): String {
+
+        val loadUserByUsername = customUserDetailsService.loadUserByUsername(credentials.username)
+
+        return "Hello ${loadUserByUsername.username} , ${loadUserByUsername.password}"
     }
 
-    @GetMapping("/hello")
-    fun hello(name: String): String {
-        customUserDetailsService.registerUser()
-        return "Hello $name"
+    @PostMapping("/join")
+    fun register(newPerson: NewPerson): String {
+        newPerson.validate()
+        customUserDetailsService.registerUser(newPerson)
+        return "OK"
     }
-
 }

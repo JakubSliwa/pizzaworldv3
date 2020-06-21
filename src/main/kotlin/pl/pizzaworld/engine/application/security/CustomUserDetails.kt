@@ -14,18 +14,18 @@ open class CustomUserDetails : User, UserDetails {
         return roles
                 .stream()
                 .map { role ->
-                    SimpleGrantedAuthority(role.toString())
+                    SimpleGrantedAuthority(role)
                 }
                 .collect(Collectors.toList())
     }
 
 
     override fun getPassword(): String {
-        return super.pass!!
+        return super.pass
     }
 
     override fun getUsername(): String {
-        return super.userName!!
+        return super.userName
     }
 
     override fun isEnabled(): Boolean {

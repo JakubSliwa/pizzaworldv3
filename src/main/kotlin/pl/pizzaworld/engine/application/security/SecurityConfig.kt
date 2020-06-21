@@ -6,7 +6,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.password.PasswordEncoder
 
 class SecurityConfig(private val passwordEncoderAndMatcher: PasswordEncoder,
-                     private val customUserDetailsService: CustomUserDetailsService) : WebSecurityConfigurerAdapter() {
+                     private val customUserDetailsService: CustomUserDetailsService,
+                     private val basicAuthEntryPoint: BasicAuthEntryPoint) : WebSecurityConfigurerAdapter() {
 
     override fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(customUserDetailsService)
@@ -16,10 +17,10 @@ class SecurityConfig(private val passwordEncoderAndMatcher: PasswordEncoder,
     override fun configure(http: HttpSecurity) {
         http.csrf().disable()
         http.authorizeRequests()
-                .antMatchers("/register").permitAll()
+                .antMatchers("/join").permitAll()
                 .antMatchers("/*").authenticated()
-                .anyRequest().permitAll()
                 .and()
-                .formLogin().permitAll()
+                .httpBasic()
+                .authenticationEntryPoint(basicAuthEntryPoint)
     }
 }
