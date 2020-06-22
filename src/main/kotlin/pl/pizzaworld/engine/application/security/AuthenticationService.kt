@@ -4,22 +4,21 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
-import org.springframework.stereotype.Service
+import pl.pizzaworld.engine.application.time.TimeProvider
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
-class AuthenticationService {
+class AuthenticationService(private val timeProvider: TimeProvider, private val userRepository: UserRepository) {
     val EXPIRATIONTIME: Long = 86400000 // 1 day in milliseconds
     val SIGNINGKEY = "SecretKey"
     val PREFIX = "Bearer"
 
-    //dodać time provider
     fun addToken(res: HttpServletResponse, username: String?) {
         val token = Jwts.builder()
                 .setSubject(username)
-                .setExpiration(Date(System.currentTimeMillis() + EXPIRATIONTIME))
+                .setExpiration(timeProvider.now()?.toEpochSecond()?.plus(EXPIRATIONTIME)?.let { Date(it) })
                 .signWith(SignatureAlgorithm.HS512, SIGNINGKEY)
                 .compact()
         res.addHeader("Authorization", "$PREFIX $token")

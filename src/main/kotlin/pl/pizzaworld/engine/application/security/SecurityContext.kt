@@ -3,15 +3,18 @@ package pl.pizzaworld.engine.application.security
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import pl.pizzaworld.engine.application.time.TimeProvider
 
 @Import(SecurityConfig::class)
 @Configuration
-class SecurityContext {
+class SecurityContext(private val timeProvider: TimeProvider, private val mongoTemplate: MongoTemplate) {
 
     @Bean
     fun passwordEncoderAndMatcher(): PasswordEncoder {
@@ -25,7 +28,6 @@ class SecurityContext {
             }
         }
     }
-
 
 
     @Bean
@@ -42,7 +44,12 @@ class SecurityContext {
     }
 
     @Bean
-    fun authenticationService(): AuthenticationService{
-        return AuthenticationService()
+    fun authenticationService(): AuthenticationService {
+        return AuthenticationService(timeProvider, userRepository())
+    }
+
+    @Bean
+    fun userRepository(): MongoUserRepository {
+        return MongoUserRepository(mongoTemplate)
     }
 }

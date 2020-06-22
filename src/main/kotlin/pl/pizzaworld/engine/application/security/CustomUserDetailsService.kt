@@ -18,8 +18,7 @@ class CustomUserDetailsService(private val userRepository: UserRepository,
 
     fun registerUser(newPerson: NewPerson): UUID {
         val user = User(newPerson.firstName, newPerson.lastName, newPerson.userName, newPerson.email, encoder.encode(newPerson.password), hashSetOf("USER"))
-        userRepository.save(user)
-        return user.id
+        return userRepository.save(user)
     }
 
 }
