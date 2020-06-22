@@ -10,7 +10,7 @@ import java.util.*
 
 @Service
 class CustomUserDetailsService(private val userRepository: UserRepository,
-                               private val encoder: PasswordEncoder) : UserDetailsService {
+                               private val encoder: PasswordEncoder) : UserDetailsService{
 
     override fun loadUserByUsername(username: String): UserDetails {
         return CustomUserDetails(userRepository.findOneByUserName(username)!!)

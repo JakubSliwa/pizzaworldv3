@@ -1,14 +1,15 @@
 package pl.pizzaworld.engine.application.security
 
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
-@Document
+@Document(collection = "users")
 open class User(var firstName: String = "",
                 var lastName: String = "",
-                var userName: String = "",
-                var email: String = "",
+                @Indexed(unique = true) var userName: String = "",
+                @Indexed(unique = true) var email: String = "",
                 var pass: String = "",
                 var roles: Set<String> = hashSetOf()) {
     @Id
