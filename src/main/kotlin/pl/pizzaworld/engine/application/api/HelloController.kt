@@ -1,5 +1,6 @@
 package pl.pizzaworld.engine.application.api
 
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -22,5 +23,10 @@ class HelloController(val customUserDetailsService: CustomUserDetailsService) {
     fun register(@RequestBody newPerson: NewPerson): UUID {
         newPerson.validate()
         return customUserDetailsService.registerUser(newPerson)
+    }
+
+    @GetMapping("/test")
+    fun register(): String {
+        return "OK"
     }
 }

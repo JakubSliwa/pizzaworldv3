@@ -1,3 +1,6 @@
 package pl.pizzaworld.engine.person
 
-data class Credentials(val username: String, val password: String)
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class Credentials(@JsonProperty("username") val username: String,
+                       @JsonProperty("password") val password: String)
