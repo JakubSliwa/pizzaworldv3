@@ -9,6 +9,7 @@ class MongoUserRepository(private val mongoTemplate: MongoTemplate) : UserReposi
 
     override fun findOneByUserName(userName: String): User? {
         val query = Query().addCriteria(User::userName isEqualTo userName)
+        //rzucić wyjątek
         return mongoTemplate.findOne(query, User::class.java)
     }
 

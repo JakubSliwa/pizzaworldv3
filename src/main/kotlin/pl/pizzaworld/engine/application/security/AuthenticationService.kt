@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 
-class AuthenticationService(private val timeProvider: TimeProvider, private val userRepository: UserRepository) {
+class AuthenticationService(private val timeProvider: TimeProvider, private val customUserDetailsService: CustomUserDetailsService) {
     val EXPIRATIONTIME: Long = 86400000 // 1 day in milliseconds
     val SIGNINGKEY = "SecretKey"
     val PREFIX = "Bearer"
@@ -25,16 +25,19 @@ class AuthenticationService(private val timeProvider: TimeProvider, private val 
         res.addHeader("Access-Control-Expose-Headers", "Authorization")
     }
 
-    //sprawdzić czy user istnieje w bazie?
     fun getAuthentication(request: HttpServletRequest): Authentication? {
         val token = request.getHeader("Authorization")
         if (token != null) {
-            val user = Jwts.parser()
+            val username = Jwts.parser()
                     .setSigningKey(SIGNINGKEY)
                     .parseClaimsJws(token.replace(PREFIX, ""))
                     .body
                     .subject
-            if (user != null) return UsernamePasswordAuthenticationToken(user, null, emptyList())
+            if (username != null) {
+                val user = customUserDetailsService.loadUserByUsername(username)
+
+                return UsernamePasswordAuthenticationToken(user, null, user?.authorities)
+            }
         }
         return null
     }

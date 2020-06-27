@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.cors.CorsConfiguration
@@ -44,8 +43,13 @@ class SecurityContext(private val timeProvider: TimeProvider, private val mongoT
     }
 
     @Bean
+    fun customUserDetailsService(): CustomUserDetailsService {
+        return CustomUserDetailsService(userRepository(), passwordEncoderAndMatcher())
+    }
+
+    @Bean
     fun authenticationService(): AuthenticationService {
-        return AuthenticationService(timeProvider, userRepository())
+        return AuthenticationService(timeProvider, customUserDetailsService())
     }
 
     @Bean
